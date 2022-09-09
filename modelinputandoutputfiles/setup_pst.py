@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pyemu
 
@@ -56,14 +57,26 @@ for par_df in par_dfs:
 		if col == "parnme":
 			continue
 		par.loc[par_df.index,col] = par_df.loc[:,col].values
-		par.loc[par_df.index,"parubnd"] = par_df.parval1 * 10 #?
-		par.loc[par_df.index, "parlbnd"] = par_df.parval1 * 0.1  # ?
+
+kpar = par.loc[par.parnme.str.contains("k_"),:]
+par.loc[kpar.parnme,"parubnd"] = 100.0
+par.loc[kpar.parnme,"parlbnd"] = 1e-7
+par.loc[kpar.parnme,"parval1"] = 1e-3
+
+spar = par.loc[par.parnme.str.contains("s_"),:]
+par.loc[spar.parnme,"parubnd"] = 1.0
+par.loc[spar.parnme,"parlbnd"] = 0.001
+par.loc[spar.parnme,"parval1"] = 0.1
+
+
 
 v = pyemu.geostats.ExpVario(1.0,1000,10.0,90)
 gs = pyemu.geostats.GeoStruct(variograms=[v])
 sd = {gs:par_dfs}
 pe = pyemu.helpers.geostatistical_draws(pst,sd)
 pe.enforce()
+print(pe._df.min())
+print(pe._df.max())
 pe.to_csv("prior.csv")
 pst.pestpp_options["ies_par_en"] = "prior.csv"
 
