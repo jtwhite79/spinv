@@ -5,6 +5,17 @@ import pyemu
 input_files = ["parameters.csv"]
 tpl_files = []
 par_dfs = []
+df = pd.read_csv("parameters.csv")
+xvals = df.X.unique()
+xvals.sort()
+zvals = df.Z.unique()
+zvals.sort()
+xdict = {x:i for i,x in enumerate(xvals)}
+assert len(xdict) == len(xvals)
+zdict = {z:i for i,z in enumerate(zvals)}
+assert len(zdict) == len(zvals)
+
+
 for input_file in input_files:
 	tag = input_file.split(".")[0].split("_")[-1].lower()
 	tpl_file = input_file+".tpl"
@@ -22,7 +33,7 @@ for input_file in input_files:
 		ftpl.write(",".join(raw[:3]))
 		pos = 3
 		for h,r in zip(header[3:],raw[3:]):
-			pname = "pname:"+h + "_x:"+x +"_z:"+z
+			pname = "pname:"+h + "_x:"+x +"_z:"+z + "_i:{0}_j:{1}".format(xdict[float(x)],zdict[float(z)])
 			raw[pos] = "~"+pname+"~"
 			ftpl.write(",{0}".format(raw[pos]))
 			data["parnme"].append(pname)
