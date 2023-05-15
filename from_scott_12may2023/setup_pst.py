@@ -82,7 +82,7 @@ def setup_pst():
 	pst = pyemu.Pst.from_io_files(tpl_files,input_files,ins_files,output_files)
 	pst.model_command = "matlab -nodesktop -nosplash -r \"Rio_Grande_Forward_Model_to_Jeremy.m\""
 	pst.noptmax = 0
-	pst.write("pest.pst")
+	pst.write("pest.pst",version=2)
 
 	par = pst.parameter_data
 	for par_df in par_dfs:
@@ -119,12 +119,11 @@ def setup_pst():
 	print(pe._df.max())
 	pe.to_csv("prior.csv")
 	pst.pestpp_options["ies_par_en"] = "prior.csv"
-	pst.pestpp_options["ies_num_reals"] = 20
-	pst.pestpp_options["ies_lambda_mults"] = [0.1,1.0,10.0]
-	pst.pestpp_options["lambda_scale_fac"] = [0.5,1.0]
+	pst.pestpp_options["ies_num_reals"] = 100
+	pst.control_data.noptmax = 5
 
 
-	pst.write("pest.pst")
+	pst.write("pest.pst",version=2)
 
 def plot_real():
 	import matplotlib.pyplot as plt
