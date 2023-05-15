@@ -82,7 +82,10 @@ def setup_pst():
 	pst = pyemu.Pst.from_io_files(tpl_files,input_files,ins_files,output_files)
 	pst.model_command = "matlab -nodesktop -nosplash -r \"Rio_Grande_Forward_Model_to_Jeremy.m\""
 	pst.noptmax = 0
+	pst.pestpp_options["debug_parse_only"] = True
 	pst.write("pest.pst",version=2)
+	pyemu.os_utils.run("pestpp-ies pest.pst")
+	pst.pestpp_options.pop("debug_parse_only")
 
 	par = pst.parameter_data
 	for par_df in par_dfs:
@@ -115,8 +118,6 @@ def setup_pst():
 	sd[gs] = dfs
 	pe = pyemu.helpers.geostatistical_draws(pst,sd)
 	pe.enforce()
-	print(pe._df.min())
-	print(pe._df.max())
 	pe.to_csv("prior.csv")
 	pst.pestpp_options["ies_par_en"] = "prior.csv"
 	pst.pestpp_options["ies_num_reals"] = 100
