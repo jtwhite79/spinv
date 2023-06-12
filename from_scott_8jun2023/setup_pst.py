@@ -131,6 +131,7 @@ def setup_pst():
 	assert pe.shape[1] == pst.npar
 	pst.pestpp_options["ies_par_en"] = "prior.csv"
 	pst.pestpp_options["ies_num_reals"] = 100
+	pst.pestpp_options["ies_no_noise"] = True
 	pst.control_data.noptmax = 5
 
 
@@ -163,14 +164,15 @@ def plot_real():
 		#print(arr)
 		#cb = ax.imshow(arr)
 		#plt.colorbar(cb,ax=ax)
-		ax.scatter(ppar.x,ppar.y,marker="o",c=pe.loc[pe.index[0],ppar.parnme].values)
-		ax.set_title(pname)
+		vals = pe.loc[pe.index[0],ppar.parnme].values
+		ax.scatter(ppar.x,ppar.y,marker="o",c=vals)
+		ax.set_title("pname:{0}, min:{1:10.4f}, max:{2:10.4f}".format(pname,vals.min(),vals.max()))
 		ax.set_aspect(50)
 	plt.tight_layout()
 	plt.savefig("real.pdf")
 
 if __name__ == "__main__":
-	setup_pst()
+	#setup_pst()
 	plot_real()
 
 
